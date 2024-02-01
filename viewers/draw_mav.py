@@ -89,11 +89,11 @@ class DrawMav:
         #   define the points on the Mav according to Appendix C.3
         points = self.unit_length * np.array([
             [0,0,0], # shift all points by one index
-            [0.5, 0, 0.05],  # nose point 1 [1]
-            [0.25, 0.15, 0.15],  # nose point 2 [2]
-            [0.25, -0.15, 0.15],  # nose point 3 [3]
-            [0.25, -0.15, -0.15],  # nose point 4 [4]
-            [0.25, 0.15, -0.15],  # nose point 5 [5]
+            [0.5, 0, 0.05],  # nose 1
+            [0.25, 0.15, 0.15],  # nose 2
+            [0.25, -0.15, 0.15],  # nose 3
+            [0.25, -0.15, -0.15],  # nose 4
+            [0.25, 0.15, -0.15],  # nose 5
             [-1.1, 0, 0],  # tail point 6
             [0, 0.75, 0],  # wing point 7 
             [-0.32, 0.75, 0],  # wing point 8 
@@ -101,11 +101,10 @@ class DrawMav:
             [0, -0.75, 0],  # wing point 10 
             [-0.9, 0.35, 0],  # rear wing point 11 
             [-1.1, 0.35, 0],  # rear wing point 12
-            [-1.1, -0.35, 0],  # rear wing  
-            [-0.9, -0.35, 0],  # rear wing
-            [-0.9, 0, 0],  # rear Tri
-            [-1.1, 0, -0.4]  # rear Tri    
-
+            [-1.1, -0.35, 0],  # rear wing 13
+            [-0.9, -0.35, 0],  # rear wing 14
+            [-0.9, 0, 0],  # rear tri 15
+            [-1.1, 0, -0.4]  # rear tri 16
             ]).T
         # point index that defines the mesh
         index = np.array([
@@ -121,7 +120,7 @@ class DrawMav:
             [7, 9, 10],  # wing
             [11, 12, 13],  # rear wing
             [14, 11, 13],  # rear wing 
-            [15, 6, 16]  # rear wing 
+            [15, 6, 16]  # rear tri 
             ])
         #   define the colors for each face of triangular mesh
         red = np.array([1., 0., 0., 1])
@@ -129,18 +128,18 @@ class DrawMav:
         blue = np.array([0., 0., 1., 1])
         yellow = np.array([1., 1., 0., 1])
         meshColors = np.empty((13, 3, 4), dtype=np.float32)
-        meshColors[0] = yellow  # front 1
-        meshColors[1] = yellow  # front 2
-        meshColors[2] = yellow  # back 1
-        meshColors[3] = yellow  # back 2
-        meshColors[4] = blue  # right 1
-        meshColors[5] = blue  # right 2
-        meshColors[6] = blue  # left 1
-        meshColors[7] = blue  # left 2
-        meshColors[8] = red  # top 1
-        meshColors[9] = red  # top 2
-        meshColors[10] = green  # bottom 1
-        meshColors[11] = green  # bottom 2
-        meshColors[12] = red # wing Tri
+        meshColors[0] = yellow  # nose
+        meshColors[1] = yellow  # nose
+        meshColors[2] = yellow  # nose
+        meshColors[3] = yellow  # nose
+        meshColors[4] = blue  # tail
+        meshColors[5] = blue  # tail
+        meshColors[6] = blue  # tail
+        meshColors[7] = blue  # tail
+        meshColors[8] = red  # wing
+        meshColors[9] = red  # wing
+        meshColors[10] = green  # rear wing
+        meshColors[11] = green  # rear wing
+        meshColors[12] = red # rear tri
         return points, index, meshColors
 
