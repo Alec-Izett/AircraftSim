@@ -46,6 +46,9 @@ class DrawMav:
         sc_position = np.array([[state.north], [state.east], [-state.altitude]])  # NED coordinates
         # attitude of mav as a rotation matrix R from body to inertial
         R_bi = euler_to_rotation(state.phi, state.theta, state.psi)
+        
+        
+        
         self.sc_body = self.update_object(
             self.sc_body,
             self.sc_points,
@@ -85,33 +88,40 @@ class DrawMav:
         # points are in XYZ coordinates
         #   define the points on the Mav according to Appendix C.3
         points = self.unit_length * np.array([
-            [1, 1, 0],  # point 1 [0]
-            [1, -1, 0],  # point 2 [1]
-            [-1, -1, 0],  # point 3 [2]
-            [-1, 1, 0],  # point 4 [3]
-            [1, 1, -2],  # point 5 [4]
-            [1, -1, -2],  # point 6 [5]
-            [-1, -1, -2],  # point 7 [6]
-            [-1, 1, -2],  # point 8 [7]
-            [1.5, 1.5, 0],  # point 9 [8]
-            [1.5, -1.5, 0],  # point 10 [9]
-            [-1.5, -1.5, 0],  # point 11 [10]
-            [-1.5, 1.5, 0]  # point 12 [11]
+            [0,0,0], # shift all points by one index
+            [0.5, 0, 0.05],  # nose point 1 [1]
+            [0.25, 0.15, 0.15],  # nose point 2 [2]
+            [0.25, -0.15, 0.15],  # nose point 3 [3]
+            [0.25, -0.15, -0.15],  # nose point 4 [4]
+            [0.25, 0.15, -0.15],  # nose point 5 [5]
+            [-1.1, 0, 0],  # tail point 6
+            [0, 0.75, 0],  # wing point 7 
+            [-0.32, 0.75, 0],  # wing point 8 
+            [-0.32, -0.75, 0],  # wing point 9 
+            [0, -0.75, 0],  # wing point 10 
+            [-0.9, 0.35, 0],  # rear wing point 11 
+            [-1.1, 0.35, 0],  # rear wing point 12
+            [-1.1, -0.35, 0],  # rear wing  
+            [-0.9, -0.35, 0],  # rear wing
+            [-0.9, 0, 0],  # rear Tri
+            [-1.1, 0, -0.4]  # rear Tri    
+
             ]).T
         # point index that defines the mesh
         index = np.array([
-            [0, 1, 5],  # front 1
-            [0, 5, 4],  # front 2
-            [3, 2, 6],  # back 1
-            [3, 6, 7],  # back 2
-            [0, 4, 7],  # right 1
-            [0, 7, 3],  # right 2
-            [1, 5, 6],  # left 1
-            [1, 6, 2],  # left 2
-            [4, 5, 6],  # top 1
-            [4, 6, 7],  # top 2
-            [8, 9, 10],  # bottom 1
-            [8, 10, 11],  # bottom 2  
+            [1, 2, 3],  # nose
+            [1, 3, 4],  # nose
+            [1, 4, 5],  # nose
+            [1, 2, 5],  # nose
+            [2, 3, 6],  # tail 
+            [3, 4, 6],  # tail
+            [5, 4, 6],  # tail
+            [5, 2, 6],  # tail
+            [7, 8, 9],  # wing
+            [7, 9, 10],  # wing
+            [11, 12, 13],  # rear wing
+            [14, 11, 13],  # rear wing 
+            [15, 6, 16]  # rear wing 
             ])
         #   define the colors for each face of triangular mesh
         red = np.array([1., 0., 0., 1])
@@ -131,5 +141,6 @@ class DrawMav:
         meshColors[9] = red  # top 2
         meshColors[10] = green  # bottom 1
         meshColors[11] = green  # bottom 2
+        meshColors[12] = red # wing Tri
         return points, index, meshColors
 
