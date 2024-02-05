@@ -10,3 +10,4 @@ Releases:
 
 Release 0.0.2 - Added realeases.md
 Release 0.0.1 – Initial commit. Setting up the repository
+Release 0.2.0 - Chapter 2 Submission
