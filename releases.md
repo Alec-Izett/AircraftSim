@@ -8,5 +8,5 @@ Repository Description: Airplane simulation in Python to support ECE-7353 Spring
 
 Releases:
 
-Release 0.0.2 - Added realeases.md
+Release 0.0.2 - Added realeases.md - Grade for project #2 is 10/10.  Please add release documentation.
 Release 0.0.1 – Initial commit. Setting up the repository
