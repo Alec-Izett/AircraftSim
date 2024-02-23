@@ -94,7 +94,7 @@ class MavDynamics(MavDynamicsForces):
 
         # compute gravitational forces ([fg_x, fg_y, fg_z])
 
-        fg_b = np.matmul(euler_to_rotation(phi, theta, psi).T, [0, 0,MAV.mass*MAV.gravity])
+        fg_b = euler_to_rotation(phi, theta, psi).T @ [0, 0,MAV.mass*MAV.gravity]
         
 
         # compute Lift and Drag coefficients (CL, CD)
@@ -126,7 +126,7 @@ class MavDynamics(MavDynamicsForces):
         
         Cz = -CD * np.sin(self._alpha) - CL * np.cos(self._alpha)
         Czq = -MAV.C_D_q * np.sin(self._alpha) - MAV.C_L_q * np.cos(self._alpha)
-        Cz_delta_e = -MAV.C_D_delta_e * np.sin(self._alpha) - MAV.C_L_delta_e * np.cos(MAV.alpha0)
+        Cz_delta_e = -MAV.C_D_delta_e * np.sin(self._alpha) - MAV.C_L_delta_e * np.cos(self._alpha)
         
         fz = fg_b[1] + \
             q_bar * MAV.S_wing * (Cz + Czq * ((self.true_state.q * MAV.c)/(2 * self._Va))) + \
@@ -136,20 +136,20 @@ class MavDynamics(MavDynamicsForces):
         # compute lateral forces in body frame (fy)
         
         fy = fg_b[2] + \
-            q_bar * MAV.S_wing * (MAV.C_Y_0 + MAV.C_Y_beta * self._beta + (MAV.C_Y_p * (self.true_state.p * MAV.b))/(2 * self._Va)) + MAV.C_Y_r * ((MAV.b * MAV.r0)/(2 * self._Va)) + \
+            q_bar * MAV.S_wing * (MAV.C_Y_0 + MAV.C_Y_beta * self._beta + (MAV.C_Y_p *self.true_state.p * MAV.b)/(2 * self._Va) + (MAV.C_Y_r * MAV.b * self.true_state.r)/(2 * self._Va)) + \
                 q_bar * MAV.S_wing * (MAV.C_Y_delta_a * delta.aileron + MAV.C_Y_delta_r * delta.rudder)
 
         # compute logitudinal torque in body frame (My)
         
-        l = q_bar * MAV.S_wing * (MAV.b * (MAV.C_ell_0 + MAV.C_ell_beta * self._beta + MAV.C_ell_p * ((self.true_state.p * MAV.b)/(2 * self._Va)) + MAV.C_ell_r * ((self.true_state.r * MAV.b)/(2 * self._Va)))) + \
-            q_bar * MAV.S_wing * (MAV.b * (MAV.C_ell_delta_a * delta.aileron) + MAV.C_ell_delta_r * delta.rudder) + \
+        l = q_bar * MAV.S_wing * MAV.b * (MAV.C_ell_0 + MAV.C_ell_beta * self._beta + MAV.C_ell_p * ((self.true_state.p * MAV.b)/(2 * self._Va)) + ((MAV.C_ell_r * self.true_state.r * MAV.b)/(2 * self._Va))) + \
+            q_bar * MAV.S_wing * MAV.b * ((MAV.C_ell_delta_a * delta.aileron) + MAV.C_ell_delta_r * delta.rudder) + \
                 torque_prop
                 
-        m = q_bar * MAV.S_wing * (MAV.c * (MAV.C_m_0 + MAV.C_m_alpha * self._alpha + MAV.C_m_q *  ((self.true_state.q* MAV.c)/(2 * self._Va)))) + \
-            q_bar * MAV.S_wing * (MAV.c * (MAV.C_m_delta_e * delta.elevator))
+        m = q_bar * MAV.S_wing * MAV.c * (MAV.C_m_0 + MAV.C_m_alpha * self._alpha + MAV.C_m_q *  ((self.true_state.q* MAV.c)/(2 * self._Va))) + \
+            q_bar * MAV.S_wing * MAV.c * (MAV.C_m_delta_e * delta.elevator)
 
-        n = q_bar * MAV.S_wing * (MAV.b * (MAV.C_n_0 + MAV.C_n_beta * self._beta) + MAV.C_n_p * ((self.true_state.p * MAV.b)/(2 * self._Va)) + MAV.C_n_r * ((self.true_state.r * MAV.b)/(2 * self._Va))) + \
-            q_bar * MAV.S_wing * (MAV.b * (MAV.C_n_delta_a * delta.aileron + MAV.C_n_delta_r * delta.rudder))
+        n = q_bar * MAV.S_wing * MAV.b * ((MAV.C_n_0 + MAV.C_n_beta * self._beta) + MAV.C_n_p * ((self.true_state.p * MAV.b)/(2 * self._Va)) + MAV.C_n_r * ((self.true_state.r * MAV.b)/(2 * self._Va))) + \
+            q_bar * MAV.S_wing * MAV.b * (MAV.C_n_delta_a * delta.aileron + MAV.C_n_delta_r * delta.rudder)
         # compute lateral torques in body frame (Mx, Mz)
 
         forces_moments = np.array([[fx, fy, fz, l, m, n]]).T
@@ -166,11 +166,10 @@ class MavDynamics(MavDynamicsForces):
         
         b = (MAV.C_Q1 * MAV.rho * np.power(MAV.D_prop, 4) / (2.*np.pi)) * self._Va + MAV.KQ**2 / MAV.R_motor
         
-        # is this Va WACK??
         c = MAV.C_Q2 * MAV.rho * np.power(MAV.D_prop, 3) * self._Va**2 - (MAV.KQ / MAV.R_motor) * v_in + MAV.KQ * MAV.i0
 
         # Angular speed of propeller (omega_p = ?)
-        Omega_op = (-b + np.sqrt(b**2 - 4*a*c))
+        Omega_op = (-b + np.sqrt(b**2 - 4*a*c))/(2*a)
         
         J_op = 2* np.pi * self._Va / (Omega_op * MAV.D_prop)
         
