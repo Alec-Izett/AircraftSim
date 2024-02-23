@@ -9,8 +9,14 @@ north0 = 0.  # initial north position
 east0 = 0.  # initial east position
 down0 = -100.0  # initial down position
 u0 = 25.  # initial velocity along body x-axis
+va0 = 25.
+alpha0_cool = np.deg2rad(3) # in degrees
+u0 = np.sqrt(va0**2 / (1+np.tan(alpha0_cool)**2))
+w0 = np.tan(alpha0_cool)
+w = u0 * w0
+Va1 = np.linalg.norm(np.array([u0,w0]))
 v0 = 0.  # initial velocity along body y-axis
-w0 = 0.  # initial velocity along body z-axis
+# w0 = 0.  # initial velocity along body z-axis
 phi0 = 0.  # initial roll angle
 theta0 = 0.  # initial pitch angle
 psi0 = 0.0  # initial yaw angle
@@ -62,7 +68,7 @@ C_m_delta_e = -0.99
 M = 50.0
 alpha0 = 0.47
 epsilon = 0.16
-C_D_p = 0.0
+C_D_p = 0.043
 
 
 ######################################################################################
@@ -99,6 +105,9 @@ KV = (1. / KV_rpm_per_volt) * 60. / (2. * np.pi)  # Back-emf constant, KV in V-s
 KQ = KV                                           # Motor torque constant, KQ in N-m/A
 R_motor = 0.042              # ohms
 i0 = 1.5                     # no-load (zero-torque) current (A)
+
+k_motor = 40
+k_tp = 0
 
 
 # Inputs
