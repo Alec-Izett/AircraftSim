@@ -177,7 +177,7 @@ class DataViewer:
             self._plotter.add_data_point(plot_id='pe', data_label='pe', xvalue=t, yvalue=true_state.east)
             self._plotter.add_data_point(plot_id='h', data_label='h', xvalue=t, yvalue=true_state.altitude)
             self._plotter.add_data_point(plot_id='Va', data_label='Va', xvalue=t, yvalue=true_state.Va)
-            self._plotter.add_data_point(plot_id='alpha', data_label='alpha', xvalue=t, yvalue=true_state.alpha)
+            self._plotter.add_data_point(plot_id='alpha', data_label='alpha', xvalue=t, yvalue=self.__rad_to_deg(true_state.alpha))
             self._plotter.add_data_point(plot_id='beta', data_label='beta', xvalue=t, yvalue=true_state.beta)
             self._plotter.add_data_point(plot_id='phi', data_label='phi', xvalue=t, yvalue=self.__rad_to_deg(true_state.phi))
             self._plotter.add_data_point(plot_id='theta', data_label='theta', xvalue=t, yvalue=self.__rad_to_deg(true_state.theta))
@@ -195,6 +195,12 @@ class DataViewer:
             # self._plotter.add_data_point(plot_id='u', data_label='u', xvalue=t, yvalue=true_state.u)
             # self._plotter.add_data_point(plot_id='v', data_label='v', xvalue=t, yvalue=true_state.v)
             # self._plotter.add_data_point(plot_id='w', data_label='w', xvalue=t, yvalue=true_state.w)
+            # self._plotter.add_data_point(plot_id='delta_e', data_label='delta_e', xvalue=t, yvalue=delta.elevator)
+            # self._plotter.add_data_point(plot_id='delta_a', data_label='delta_a', xvalue=t, yvalue=delta.aileron)
+            # self._plotter.add_data_point(plot_id='delta_r', data_label='delta_r', xvalue=t, yvalue=delta.rudder)
+            # self._plotter.add_data_point(plot_id='delta_t', data_label='delta_t', xvalue=t, yvalue=delta.throttle)
+
+
 
 
         #add the estimated state data

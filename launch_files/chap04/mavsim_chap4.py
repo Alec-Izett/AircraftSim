@@ -21,6 +21,8 @@ from viewers.mav_viewer import MavViewer
 from viewers.data_viewer import DataViewer
 from message_types.msg_delta import MsgDelta
 import keyboard
+from mystuff.trim import compute_trim
+
 
 #quitter = QuitListener()
 
@@ -50,6 +52,12 @@ wind = WindSimulation(SIM.ts_simulation)
 mav = MavDynamics(SIM.ts_simulation)
 delta = MsgDelta()
 
+# create initialization parameters
+Va0 = 35
+alpha0 = 0.
+beta0 = 0.
+mav.initialize_velocity(Va0, alpha0, beta0)
+
 # initialize the simulation time
 sim_time = SIM.start_time
 plot_time = sim_time
@@ -57,13 +65,25 @@ end_time = 60
 
 # ------- set control surfaces -------------
 delta.elevator = -0.1248 #ws
-delta.aileron = 0.001836 #ad
-delta.rudder = -0.0003026 #qe
+delta.aileron = 0.0 #ad
+delta.rudder = -0.0 #qe
 delta.throttle = 0.6768 #opw
+
+alpha, elevator, throttle = compute_trim(mav, delta)
+mav.initialize_velocity(Va0, alpha, beta0)
+delta.elevator = elevator
+delta.throttle = throttle
+print(alpha, delta.elevator, delta.throttle)
+
 
 # main simulation loop
 print("Press 'Esc' to exit...")
 while sim_time < end_time:
+    
+    if(abs(sim_time-3.) < 0.01):
+        delta.elevator += 0.1
+    else:
+        delta.elevator = elevator
     
     # ------- keyboard controls -------------
     if keyboard.is_pressed('w'):
