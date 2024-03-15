@@ -10,6 +10,7 @@ import os, sys
 # insert parent directory at beginning of python search path
 from pathlib import Path
 sys.path.insert(0,os.fspath(Path(__file__).parents[1]))
+sys.path.insert(0,os.fspath(Path(__file__).parents[2]))
 # use QuitListener for Linux or PC <- doesn't work on Mac
 #from tools.quit_listener import QuitListener
 import pyqtgraph as pg
@@ -19,11 +20,13 @@ from viewers.mav_viewer import MavViewer
 from viewers.data_viewer import DataViewer
 from models.mav_dynamics_control import MavDynamics
 from models.wind_simulation import WindSimulation
-from models.trim import compute_trim
+# from models.trim import compute_trim
 from models.compute_models import compute_model
 from tools.signals import Signals
-
 #quitter = QuitListener()
+from message_types.msg_delta import MsgDelta
+from mystuff.trim import compute_trim
+
 
 VIDEO = False
 PLOTS = True
@@ -55,13 +58,35 @@ mav = MavDynamics(SIM.ts_simulation)
 # use compute_trim function to compute trim state and trim input
 Va = 25.
 gamma = 0.*np.pi/180.
-trim_state, trim_input = compute_trim(mav, Va, gamma)
-mav._state = trim_state  # set the initial state of the mav to the trim state
-delta = trim_input  # set input to constant constant trim input
+# trim_state, trim_input = compute_trim(mav, Va, gamma)
+# mav._state = trim_state  # set the initial state of the mav to the trim state
+# delta = trim_input  # set input to constant constant trim input
+
+# ----- CH 4 STUFF -----
+
+# create initialization parameters
+Va0 = 35
+alpha0 = 0.
+beta0 = 0.
+mav.initialize_velocity(Va0, alpha0, beta0)
+
+delta = MsgDelta()
+
+# ------- set control surfaces -------------
+delta.elevator = -0.1248 #ws
+delta.aileron = 0.0 #ad
+delta.rudder = -0.0 #qe
+delta.throttle = 0.6768 #opw
+
+alpha, elevator, throttle = compute_trim(mav, delta)
+mav.initialize_velocity(Va0, alpha, beta0)
+delta.elevator = elevator
+delta.throttle = throttle
+
 
 # # compute the state space model linearized about trim
 if COMPUTE_MODEL:
-    compute_model(mav, trim_state, trim_input)
+    compute_model(mav, mav._state, delta)
 
 # this signal will be used to excite modes
 input_signal = Signals(amplitude=0.3,
@@ -83,7 +108,7 @@ while sim_time < end_time:
     #current_wind = wind.update()  # get the new wind vector
     current_wind = np.zeros((6, 1))
     # this input excites the phugoid mode by adding an elevator impulse at t = 5.0 s
-    # delta.elevator = delta_e_trim + input_signal.impulse(sim_time)
+    delta.elevator = delta_e_trim + input_signal.impulse(sim_time)
     # this input excites the roll and spiral divergence modes by adding an aileron doublet at t = 5.0 s
     # delta.aileron = delta_a_trim + input_signal.doublet(sim_time)
     # this input excites the dutch roll mode by adding a rudder doublet at t = 5.0 s
