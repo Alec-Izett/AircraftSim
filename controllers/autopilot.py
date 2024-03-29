@@ -16,15 +16,15 @@ from controllers.tf_control import TFControl
 from message_types.msg_state import MsgState
 from message_types.msg_delta import MsgDelta
 
-airspeed_throttle_kp = 0.0
+airspeed_throttle_kp = 1/30
 airspeed_throttle_ki = 0.0001
 
 yaw_damper_kp = 10.0
 yaw_damper_kd = 1.0
 
-alpha_elevator_kp = 0.0
+alpha_elevator_kp = -(1/np.deg2rad(8))
 alpha_elevator_ki = 0.00001
-alpha_elevator_kd = 0.0
+alpha_elevator_kd = 0.1*alpha_elevator_kp
 
 class Autopilot:
     def __init__(self, delta, mav, ts_control):
@@ -53,8 +53,7 @@ class Autopilot:
             limit=1.0
             )
             
-        
-        
+
         # # instantiate lateral-directional controllers
         # self.roll_from_aileron = PDControlWithRate(
         #                 kp=AP.roll_kp,
