@@ -8,12 +8,13 @@ import numpy as np
 
 
 class PIDControl:
-    def __init__(self, kp=0.0, ki=0.0, kd=0.0, Ts=0.01, sigma=0.05, limit=1.0, init_integrator=0.0):
+    def __init__(self, kp=0.0, ki=0.0, kd=0.0, Ts=0.01, sigma=0.05, min=-1.0, max=1.0, init_integrator=0.0):
         self.kp = kp
         self.ki = ki
         self.kd = kd
         self.Ts = Ts
-        self.limit = limit
+        self.min = min
+        self.max = max
         self.integrator = init_integrator
         self.error_delay_1 = 0.0
         self.error_dot_delay_1 = 0.0
@@ -80,10 +81,10 @@ class PIDControl:
 
     def _saturate(self, u):
         # saturate u at +- self.limit
-        if u >= self.limit:
-            u_sat = self.limit
-        elif u <= -self.limit:
-            u_sat = -self.limit
+        if u >= self.max:
+            u_sat = self.max
+        elif u <= self.min:
+            u_sat = self.min
         else:
             u_sat = u
         return u_sat

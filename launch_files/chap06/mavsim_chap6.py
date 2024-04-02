@@ -69,7 +69,7 @@ Va_command = Signals(dc_offset=25.0,
                      amplitude=3.0,
                      start_time=2.0,
                      frequency=0.01)
-altitude_command = Signals(dc_offset=100.0,
+altitude_command = Signals(dc_offset=120.0,
                            amplitude=20.0,
                            start_time=0.0,
                            frequency=0.02)
@@ -80,7 +80,7 @@ course_command = Signals(dc_offset=np.radians(180),
 
 # initialize the simulation time
 sim_time = SIM.start_time
-end_time = 100
+end_time = 1000
 
 # this signal will be used to excite modes
 input_signal = Signals(amplitude=0.3,
@@ -92,15 +92,15 @@ print("Press 'Esc' to exit...")
 while sim_time < end_time:
 
     # -------autopilot commands-------------
-    commands.airspeed_command = Va_command.square(sim_time)
-    commands.course_command = course_command.square(sim_time)
-    commands.altitude_command = altitude_command.square(sim_time)
+    # commands.airspeed_command = Va_command.square(sim_time)
+    # commands.course_command = course_command.square(sim_time)
+    # commands.altitude_command = altitude_command.square(sim_time)
 
     # -------autopilot-------------
     estimated_state = mav.true_state  # uses true states in the control
     delta, commanded_state = autopilot.update(commands, estimated_state)
-    delta.rudder = delta.rudder + input_signal.impulse(time=sim_time)
-    delta.elevator = delta.elevator + input_signal.impulse(time=sim_time)
+    # delta.rudder = delta.rudder + input_signal.impulse(time=sim_time)
+    # delta.elevator = delta.elevator + input_signal.impulse(time=sim_time)
     # delta.aileron = delta.aileron + input_signal.impulse(time=sim_time)
 
     # -------physical system-------------
