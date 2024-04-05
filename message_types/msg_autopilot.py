@@ -16,7 +16,7 @@ class MsgAutopilot:
         # Base Config
         self.airspeed_command = 25.0  # commanded airspeed m/s
         self.course_command = np.deg2rad(0)  # commanded course angle in rad
-        self.altitude_command = 150.0  # commanded altitude in m
+        self.altitude_command = 100.0  # commanded altitude in m
         self.phi_feedforward = 0.0  # feedforward command for roll angle
 
         # Test1

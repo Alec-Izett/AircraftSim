@@ -66,16 +66,16 @@ autopilot = Autopilot(delta=delta, mav=mav, ts_control=SIM.ts_simulation)
 from message_types.msg_autopilot import MsgAutopilot
 commands = MsgAutopilot()
 Va_command = Signals(dc_offset=25.0,
-                     amplitude=3.0,
-                     start_time=2.0,
-                     frequency=0.01)
-altitude_command = Signals(dc_offset=120.0,
+                     amplitude=5.0,
+                     start_time=5000.0,
+                     frequency=0.05)
+altitude_command = Signals(dc_offset=100.0,
                            amplitude=20.0,
-                           start_time=0.0,
-                           frequency=0.02)
-course_command = Signals(dc_offset=np.radians(180),
-                         amplitude=np.radians(45),
-                         start_time=5.0,
+                           start_time=5.0,
+                           frequency=0.01)
+course_command = Signals(dc_offset=np.radians(0),
+                         amplitude=np.radians(25),
+                         start_time=2.0,
                          frequency=0.015)
 
 # initialize the simulation time
@@ -93,7 +93,7 @@ while sim_time < end_time:
 
     # -------autopilot commands-------------
     # commands.airspeed_command = Va_command.square(sim_time)
-    # commands.course_command = course_command.square(sim_time)
+    commands.course_command = course_command.square(sim_time)
     # commands.altitude_command = altitude_command.square(sim_time)
 
     # -------autopilot-------------
