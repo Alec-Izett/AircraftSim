@@ -87,19 +87,29 @@ class MavDynamics(MavDynamicsForces):
         # simulate magnetometers
         # magnetic field in provo has magnetic declination of 12.5 degrees
         # and magnetic inclination of 66 degrees
-        self._sensors.mag_x = 0
-        self._sensors.mag_y = 0
-        self._sensors.mag_z = 0
-
+        inc = np.deg2rad(66)
+        dec = np.deg2rad(2.13)
+        
+        rotMatrix = (euler_to_rotation(phi=0, theta=-inc, psi=dec)).T
+        
+        # multiply e1
+        mi = rotMatrix * (np.matrix([[1.00],[0.0],[0.0]]))
+        
+        mb = ((euler_to_rotation(phi=self.true_state.phi, psi=self.true_state.psi, theta=self.true_state.theta)).T) * mi
+        
+        self._sensors.mag_x = mb[0] * np.random.normal(0, SENSOR.mag_sigma)
+        self._sensors.mag_y = mb[1] * np.random.normal(0, SENSOR.mag_sigma)
+        self._sensors.mag_z = mb[2] * np.random.normal(0, SENSOR.mag_sigma)
+                
         # simulate pressure sensors
         self._sensors.abs_pressure = 101325 * (1 - ((-0.0065*self.true_state.altitude)/288.15))**((MAV.gravity * 0.0289644)/(8.31432*-0.0065)) + np.random.normal(0, SENSOR.abs_pres_sigma)
-        self._sensors.diff_pressure = ((MAV.rho * self.true_state.Va**2)/2) + np.random.normal(0, SENSOR.diff_pres_sigma)
+        self._sensors.diff_pressure = ((MAV.rho*self.true_state.Va**2)/2) + np.random.normal(0, SENSOR.diff_pres_sigma)
         
         # simulate GPS sensor
         if self._t_gps >= SENSOR.ts_gps:
-            self._gps_eta_n = np.exp(-SENSOR.gps_k)*self._gps_eta_n + np.random.normal(0, SENSOR.gps_n_sigma)
-            self._gps_eta_e = np.exp(-SENSOR.gps_k)*self._gps_eta_e + np.random.normal(0, SENSOR.gps_e_sigma)
-            self._gps_eta_h = np.exp(-SENSOR.gps_k)*self._gps_eta_h + np.random.normal(0, SENSOR.gps_h_sigma)
+            self._gps_eta_n = np.exp(-SENSOR.gps_k*SENSOR.ts_gps)*self._gps_eta_n + np.random.normal(0, SENSOR.gps_n_sigma)*SENSOR.ts_gps
+            self._gps_eta_e = np.exp(-SENSOR.gps_k*SENSOR.ts_gps)*self._gps_eta_e + np.random.normal(0, SENSOR.gps_e_sigma)*SENSOR.ts_gps
+            self._gps_eta_h = np.exp(-SENSOR.gps_k*SENSOR.ts_gps)*self._gps_eta_h + np.random.normal(0, SENSOR.gps_h_sigma)*SENSOR.ts_gps
             self._gps_eta_Vg = np.random.normal(0, SENSOR.gps_Vg_sigma)
             self._gps_eta_course = np.random.normal(0, SENSOR.gps_course_sigma)
             
@@ -107,8 +117,8 @@ class MavDynamics(MavDynamicsForces):
             self._sensors.gps_e = self.true_state.east + self._gps_eta_e
             self._sensors.gps_h = self.true_state.altitude + self._gps_eta_h
             
-            self._sensors.gps_Vg = np.sqrt((self.true_state.Va*np.cos(self.true_state.psi)+self.true_state.wn)**2+(self.true_state.Va*np.sin(self.true_state.psi)+self.true_state.we)**2) + self._gps_eta_Vg
-            self._sensors.gps_course =  (np.arctan2(self.true_state.Va*np.sin(self.true_state.psi)+self.true_state.we, self.true_state.Va*np.cos(self.true_state.psi)+self.true_state.wn) + self._gps_eta_course)
+            self._sensors.gps_Vg = np.sqrt((self.true_state.Va*np.cos(self.true_state.psi)+self.true_state.wn)**2 + (self.true_state.Va*np.sin(self.true_state.psi)+self.true_state.we)**2) + self._gps_eta_Vg
+            self._sensors.gps_course = (np.arctan2(self.true_state.Va*np.sin(self.true_state.psi) + self.true_state.we, self.true_state.Va*np.cos(self.true_state.psi)+self.true_state.wn) + self._gps_eta_course)
             self._t_gps += self._ts_simulation
         else:
             self._t_gps += self._ts_simulation

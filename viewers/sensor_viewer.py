@@ -33,6 +33,7 @@ class SensorViewer:
         gyro_color = (255,0,0)
         pressure_color = (0,0,255)
         accelerometer_color = (255,154,111)
+        mag_color = (170,120,111)
 
         # define first row
         self._plotter.create_plot_widget(plot_id='gyro_x', xlabel='Time (s)', ylabel='gyro_x(m/s)',
@@ -79,7 +80,16 @@ class SensorViewer:
         # define fourth row
         self._plotter.create_plot_widget(plot_id='gps_course', xlabel='Time (s)', ylabel='gps_course (deg)',
                                        window_length=self._data_window_length)
+        self._plotter.create_plot_widget(plot_id='mag_x', xlabel='Time (s)', ylabel='Tesla(nt)',
+                                       window_length=self._data_window_length)
+        self._plotter.create_plot_widget(plot_id='mag_y', xlabel='Time (s)', ylabel='Tesla(nt)',
+                                       window_length=self._data_window_length)
+        self._plotter.create_plot_widget(plot_id='mag_z', xlabel='Time (s)', ylabel='Tesla(nt)',
+                                       window_length=self._data_window_length)
         self._plotter.create_data_set(plot_id='gps_course', data_label='gps_course', data_color=gps_color)
+        self._plotter.create_data_set(plot_id='mag_x', data_label='mag_x', data_color=mag_color)
+        self._plotter.create_data_set(plot_id='mag_y', data_label='mag_y', data_color=mag_color)
+        self._plotter.create_data_set(plot_id='mag_z', data_label='mag_z', data_color=mag_color)
         self._plotter.show_window()
 
     def update(self, sensors):
@@ -108,6 +118,9 @@ class SensorViewer:
         self._plotter.add_data_point(plot_id='gps_h', data_label='gps_h', xvalue=t, yvalue=sensors.gps_h)
         self._plotter.add_data_point(plot_id='gps_Vg', data_label='gps_Vg', xvalue=t, yvalue=sensors.gps_Vg)
         self._plotter.add_data_point(plot_id='gps_course', data_label='gps_course', xvalue=t, yvalue=self.__rad_to_deg(sensors.gps_course))
+        self._plotter.add_data_point(plot_id='mag_x', data_label='mag_x', xvalue=t, yvalue=sensors.mag_x.item())
+        self._plotter.add_data_point(plot_id='mag_y', data_label='mag_y', xvalue=t, yvalue=sensors.mag_y.item())
+        self._plotter.add_data_point(plot_id='mag_z', data_label='mag_z', xvalue=t, yvalue=sensors.mag_z.item())
 
     def process_app(self):
         self._plotter.process_app(0)
