@@ -6,6 +6,7 @@ Repository Description: Airplane simulation in Python to support ECE-7353 Spring
 
 Releases:
 
+Release 0.7.0 - Chapter 7 submission
 Release 0.6.1 - Chapter 6 with all autopilot functions
 Release 0.6.0 - Chapter 6
 Release 0.5.2 - Chapter 5 pt 2 Submission.
